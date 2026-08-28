@@ -54,21 +54,31 @@ enum Cmd {
         pid: u16,
     },
 
-    /// Erase a SQIF partition and write a .xuv into it. Destructive. Drives the full sequence:
-    /// enter external bootmode from normal mode, erase, write, then reset back to normal.
+    /// Flash the external-flash (SQIF) images. Destructive. Drives the full official sequence:
+    /// enter external bootmode, format partition 0, then erase and write each target partition,
+    /// then reset to normal.
+    ///
+    /// Formatting partition 0 wipes the WHOLE external flash, so both external images should be
+    /// written together. Pass ext_signed.xuv (voice prompts, partition 1) and
+    /// acorn_coeffs_signed.xuv (ANC coefficients, partition 3) from the same firmware version.
     Flash {
-        #[clap(parse(from_os_str))]
-        file: PathBuf,
+        /// ext_signed.xuv, written to SQIF partition 1 (voice prompts).
+        #[clap(long, parse(from_os_str))]
+        ext: Option<PathBuf>,
 
-        /// SQIF partition number (index.xml TARGET: 1 = voice prompts, 3 = ANC coefficients).
-        #[clap(short = 't', long)]
-        partition: u8,
+        /// acorn_coeffs_signed.xuv, written to SQIF partition 3 (ANC coefficients).
+        #[clap(long, parse(from_os_str))]
+        coeffs: Option<PathBuf>,
 
-        /// Actually perform the erase and write. Without this, the command only prints a plan.
+        /// Actually perform the format, erase, and writes. Without this, only a plan is printed.
         #[clap(long)]
         yes: bool,
     },
 }
+
+/// SQIF target partition numbers, from the index.xml TARGET attributes.
+const TARGET_EXT: u8 = 1;
+const TARGET_COEFFS: u8 = 3;
 
 fn parse_hex16(src: &str) -> Result<u16, std::num::ParseIntError> {
     u16::from_str_radix(src.trim_start_matches("0x"), 16)
@@ -87,11 +97,7 @@ fn main() -> Result<()> {
         Cmd::Parse { file } => parse_cmd(&file),
         Cmd::Probe { pid } => probe_cmd(pid),
         Cmd::Reset { pid } => reset_cmd(pid),
-        Cmd::Flash {
-            file,
-            partition,
-            yes,
-        } => flash_cmd(&file, partition, yes),
+        Cmd::Flash { ext, coeffs, yes } => flash_cmd(ext, coeffs, yes),
     }
 }
 
@@ -230,19 +236,60 @@ fn reset_cmd(pid: u16) -> Result<()> {
     Ok(())
 }
 
-fn flash_cmd(file: &std::path::Path, partition: u8, yes: bool) -> Result<()> {
-    let f = std::fs::File::open(file).with_context(|| format!("opening {}", file.display()))?;
+/// One external image to write: its target partition and reconstructed payload.
+struct Image {
+    partition: u8,
+    label: &'static str,
+    path: PathBuf,
+    xuv: xuv::Xuv,
+}
+
+fn load_image(partition: u8, label: &'static str, path: PathBuf) -> Result<Image> {
+    let f = std::fs::File::open(&path).with_context(|| format!("opening {}", path.display()))?;
     let xuv = xuv::parse(BufReader::new(f))?;
+    Ok(Image { partition, label, path, xuv })
+}
+
+fn flash_cmd(ext: Option<PathBuf>, coeffs: Option<PathBuf>, yes: bool) -> Result<()> {
+    // Parse whichever images were given, in target-partition order (ext = 1, then coeffs = 3),
+    // matching the SUBID order in index.xml.
+    let mut images = Vec::new();
+    if let Some(p) = ext {
+        images.push(load_image(TARGET_EXT, "voice prompts (ext_signed)", p)?);
+    }
+    if let Some(p) = coeffs {
+        images.push(load_image(TARGET_COEFFS, "ANC coefficients (acorn_coeffs)", p)?);
+    }
+    if images.is_empty() {
+        bail!("nothing to flash: pass --ext and/or --coeffs");
+    }
 
     println!("Plan:");
-    println!("  file           {}", file.display());
-    println!("  payload        {} bytes", xuv.payload.len());
-    println!("  SQIF partition {partition}  (ERASE, then WRITE)");
-    println!("  sequence       normal (05a7:{PID_NORMAL:04x}) -> external bootmode \
-              (05a7:{PID_EXTERNAL_BOOTMODE:04x}) -> erase -> write -> reset to normal");
+    println!(
+        "  sequence        normal (05a7:{PID_NORMAL:04x}) -> external bootmode \
+         (05a7:{PID_EXTERNAL_BOOTMODE:04x})"
+    );
+    println!("  format          erase SQIF partition 0 (wipes the WHOLE external flash)");
+    for img in &images {
+        println!(
+            "  write partition {}  {} bytes  {}  ({})",
+            img.partition,
+            img.xuv.payload.len(),
+            img.path.display(),
+            img.label
+        );
+    }
+    println!("  finish          reset to normal (05a7:{PID_NORMAL:04x})");
+    if images.len() < 2 {
+        println!(
+            "\nNOTE: formatting partition 0 wipes every external partition. You are writing only \
+             {} of the two, so the other stays blank until it is written too.",
+            images.len()
+        );
+    }
 
     if !yes {
-        println!("\nDry run only. Re-run with --yes to erase and write. This is destructive.");
+        println!("\nDry run only. Re-run with --yes to format and write. This is destructive.");
         return Ok(());
     }
 
@@ -265,24 +312,22 @@ fn flash_cmd(file: &std::path::Path, partition: u8, yes: bool) -> Result<()> {
         info.open_device(&api).context("opening external-bootmode device")?
     };
 
-    // 3. Format partition 0 first, then erase and write the target partition.
+    // 3. Format partition 0, then erase and write each target partition.
     //
-    // Disassembling the official helper (see XUV_FLASH_FAILURE.md) showed that a target erase
-    // is refused until partition 0 is erased: doUpdateFormatPartitions() calls EraseSqif(0)
-    // (logged "Formatting ext") before doUpdateFlashFile() erases the target. Skipping this is
-    // exactly what got the first live attempt rejected with status 0x00.
-    //
-    // WARNING: erasing partition 0 formats the whole external flash, wiping every partition
-    // (voice prompts = 1 and ANC coefficients = 3). A correct flow must then rewrite them all,
-    // so this single-file command is not sufficient on its own for a real update yet. The step
-    // is included to reflect the recovered sequence; a full multi-partition flow is future work.
+    // This mirrors the official helper's doUpdate state machine (see XUV_FLASH_FAILURE.md):
+    // doUpdateFormatPartitions() calls EraseSqif(0) ("Formatting ext"), then doUpdateFlashFile()
+    // erases and writes each target. A target erase is refused (status 0x00) until partition 0
+    // is formatted, which is exactly what the first live attempt hit. Formatting partition 0
+    // wipes the whole external flash, so every image passed is rewritten after it.
     warn!("Formatting external flash (erase partition 0); ALL external partitions are wiped now");
     external::erase_sqif(&dev, 0)?;
-    warn!("Erasing SQIF partition {partition}");
-    external::erase_sqif(&dev, partition)?;
-    info!("Erase acknowledged; writing {} bytes", xuv.payload.len());
-    external::write_sqif(&dev, &xuv.payload)?;
-    info!("Write complete");
+    for img in &images {
+        warn!("Erasing SQIF partition {} ({})", img.partition, img.label);
+        external::erase_sqif(&dev, img.partition)?;
+        info!("Writing {} bytes to partition {}", img.xuv.payload.len(), img.partition);
+        external::write_sqif(&dev, &img.xuv.payload)?;
+    }
+    info!("All writes complete");
 
     // 4. Reset back to normal.
     let _ = external::exit_bootmode(&dev);
