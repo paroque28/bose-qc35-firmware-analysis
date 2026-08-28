@@ -172,32 +172,88 @@ HID report descriptor (the updater assumes it does).
 
 ## Could issue 6 be fixed? Yes. What it would take
 
-Nothing found here blocks a clean-room reimplementation. Concretely:
+Nothing found here blocks a clean-room reimplementation. The expensive part, recovering the
+wire protocol, is already done (see "The recovered protocol" above). What remains is a bounded,
+mostly mechanical piece of work with exactly one genuine subtlety.
 
-1. **Recover the numeric HID report IDs and command opcodes.** Done, see "The recovered
-   protocol" above. The updater turned out to be unstripped, so disassembling the named
-   `ExternalFlasher` methods gave the exact report ID (`0x03`) and the three opcodes
-   (`0x01` bootmode, `0x02` erase, `0x03` write) directly. A USB capture of the official
-   updater writing 4.8.1 would still be worth doing once, to confirm the report ID against
-   the device's HID descriptor and to settle whether the external bootmode uses a distinct
-   PID, but it is a confirmation step now, not the way in.
-2. **Parse the `.xuv` into its binary payload.** Already essentially done in this repo
-   (`tools/xuv.py`). The payload is the words after the `fsr_dfu1` header and signature block.
-3. **Implement the external path in a `bose-dfu` fork.** Reuse its existing HID DFU state
-   machine. Add: `getBootmodePid`, the enter/exit external-bootmode resets with
-   re-enumeration polling, and the erase/partition/write SQIF commands. Target partition comes
-   from the `TARGET` attribute (ext = 1, coeffs = 3).
-4. **Test the write safely first.** The `ext_signed.xuv` payload is byte-identical across
-   4.3.6, 4.5.2, and 4.8.1 (only the signature and version stamp differ, per our earlier
-   diff). So the very first live SQIF write can push content the device already holds: if the
-   command sequence is wrong it fails before erasing anything useful, and if it succeeds
-   nothing meaningful changed. Only after that is proven should the coefficient partition
-   (TARGET 3) be written, which is the one with real consequences.
+### What is already in hand
 
-Estimated effort: with the opcodes now recovered, what remains is a few hundred lines on top
-of `bose-dfu` (the `.xuv` parser it does not have yet, the three external-flash commands, and
-the bootmode enter/exit resets with re-enumeration polling), plus one careful dry run against
-a real device to confirm the report ID and bootmode PID before writing anything that matters.
+1. **The full protocol.** Report ID `0x03`, three opcodes (`0x01` bootmode, `0x02` erase,
+   `0x03` write), the 1019-byte chunking, the 140-byte priming read, and the status byte at
+   offset 2. Recovered by disassembling the unstripped `ExternalFlasher` methods, so a USB
+   capture of the official updater is now only a confirmation step, not the way in.
+2. **A working `.xuv` parser**, `tools/xuv.py`. It already turns the `@ADDR HHHH` text into the
+   word map. Reconstructing the raw byte payload from that map is a few more lines.
+3. **The device's HID report descriptor**, read passively from the actual QC35 II, confirming
+   that report ID `0x03` is a real Output report of 1022 data bytes. The framing is verified
+   against hardware.
+
+### The one real subtlety: Output reports, not Feature reports
+
+This is the detail that shapes the whole implementation, and it was confirmed by reading the
+`bose-dfu` 1.1.0 source (`src/protocol.rs`). The existing internal DFU path speaks entirely in
+**Feature reports** (`send_feature_report` / `get_feature_report`). The external flasher does
+not. Report `0x03` is declared **Output**, and its response comes back as an **Input** report.
+In `hidapi` terms that means `device.write()` and `device.read()`, not the feature-report
+calls. So the external flasher is a *parallel* transport alongside the one already in the
+crate, not a change to it. That is good news: the work is a new module, and the working
+internal DFU code is left untouched.
+
+### The code to write
+
+Four pieces, all small, on top of the existing crate:
+
+1. **A `.xuv` reader in Rust** (about 40 lines). Port `tools/xuv.py`: parse the word lines,
+   unswap each 16-bit word to bytes, return a byte stream. The `fsr_dfu1` header travels as-is,
+   because it is part of the signed payload the device expects.
+2. **An `external.rs` module** (about 120 lines) mirroring `ExternalFlasher`:
+   - `enter_external_bootmode`: `write([0x03, 0x01, 0x01])`, then poll for re-enumeration.
+   - `erase_sqif(target)`: `write([0x03, 0x02, target])`, read status.
+   - `write_sqif(reader)`: the loop. A 140-byte priming write, then 1019-byte chunks framed as
+     `[0x03][0x03][len_be_hi][len_be_lo][data...]`, each sent as one `write()`, checking the
+     status byte at offset 2 of each response.
+   - `exit_bootmode`: `write([0x03, 0x01, 0x00])`.
+3. **Re-enumeration polling** (about 30 lines). After a bootmode reset the device drops off the
+   bus and comes back. `bose-dfu` already does this dance for `enter-dfu` / `leave-dfu`, so the
+   loop is copy-and-adapt: close the handle, poll the PID until it reappears.
+4. **A `download-external` subcommand** in `main.rs` (about 30 lines) taking an `.xuv` file plus
+   the target partition from the `TARGET` attribute in `index.xml` (`1` for the voice prompts,
+   `3` for the coefficients), and driving the sequence.
+
+That is a few hundred lines total.
+
+### The two residual unknowns (need a device, cheaply resolved)
+
+Neither blocks writing the code, only the first live run:
+
+- **Does external bootmode present a distinct PID or reuse `0x4020`?** The updater learns it at
+  runtime via `getBootmodePid`. On the CSR-based QC35 II it may just reuse `0x4020`. One dry
+  run settles it: enter external bootmode and watch which PID appears.
+- **Does the device acknowledge Output report `0x03` as the disassembly implies?** The
+  descriptor says the report exists. The first `erase` response confirms the status-byte
+  semantics.
+
+### The safe way to prove it
+
+A wrong write to SQIF corrupts voice prompts or the ANC coefficients, so the first live test
+must remove almost all risk. The `ext_signed.xuv` payload (partition 1) is byte-identical
+across 4.3.6, 4.5.2, and 4.8.1 (only the signature and version stamp differ, per our earlier
+diff). So the very first live SQIF write can push content the device already holds. If the
+command sequence is wrong, it fails at `erase` or `write` before damaging anything meaningful.
+If it succeeds, nothing actually changed. Only after that dry run proves the sequence should
+the coefficient partition (TARGET 3) be written, the one with real consequences, and even that
+stays recoverable while Bose still serves the full official update.
+
+### Recommendation
+
+It is worth doing, and it is the tool this whole ANC investigation actually needs: the
+coefficient blob is SQIF partition 3, and `.dfu`-only flashes can never set it deterministically.
+But for the immediate 4.3.6-versus-4.5.2 listening test it is not on the critical path, because
+those two versions share byte-identical coefficient payloads. The sensible order is to do the
+listening comparison first on the firmware already flashed, then build the external flasher as
+the next project. The Rust `.xuv` reader and the `external.rs` skeleton can both be written
+with no device touched, so that when the time comes the only step left is the single dry run to
+pin down the bootmode PID.
 
 ## Why this matters for the ANC investigation
 
