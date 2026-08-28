@@ -265,8 +265,20 @@ fn flash_cmd(file: &std::path::Path, partition: u8, yes: bool) -> Result<()> {
         info.open_device(&api).context("opening external-bootmode device")?
     };
 
-    // 3. Erase, then write.
-    warn!("Erasing SQIF partition {partition}; its previous contents are gone after this");
+    // 3. Format partition 0 first, then erase and write the target partition.
+    //
+    // Disassembling the official helper (see XUV_FLASH_FAILURE.md) showed that a target erase
+    // is refused until partition 0 is erased: doUpdateFormatPartitions() calls EraseSqif(0)
+    // (logged "Formatting ext") before doUpdateFlashFile() erases the target. Skipping this is
+    // exactly what got the first live attempt rejected with status 0x00.
+    //
+    // WARNING: erasing partition 0 formats the whole external flash, wiping every partition
+    // (voice prompts = 1 and ANC coefficients = 3). A correct flow must then rewrite them all,
+    // so this single-file command is not sufficient on its own for a real update yet. The step
+    // is included to reflect the recovered sequence; a full multi-partition flow is future work.
+    warn!("Formatting external flash (erase partition 0); ALL external partitions are wiped now");
+    external::erase_sqif(&dev, 0)?;
+    warn!("Erasing SQIF partition {partition}");
     external::erase_sqif(&dev, partition)?;
     info!("Erase acknowledged; writing {} bytes", xuv.payload.len());
     external::write_sqif(&dev, &xuv.payload)?;

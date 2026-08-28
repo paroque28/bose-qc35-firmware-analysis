@@ -136,6 +136,11 @@ the most likely causes, in rough order of probability:
 All three point to the same conclusion: the erase needs a command or an argument that the
 current implementation does not send. This is knowable, but not from the opcode list alone.
 
+**Hypothesis 1 turned out to be correct.** The section "Root cause found" below confirms it by
+disassembling the helper: a format of partition 0 must run before the target partition can be
+erased. The other two hypotheses are ruled out (the erase argument and opcode match the helper
+exactly).
+
 ## What this does and does not change
 
 Still valid from before this attempt:
@@ -158,6 +163,50 @@ Newly learned from the failure:
   refuses the erase itself.
 - External bootmode still answers the info feature reports, so the running firmware version is
   readable even in that mode.
+
+## Root cause found: the missing format step (from the helper's disassembly)
+
+After the device was recovered, the local helper that btu.bose.com drives
+(`/Applications/Bose Updater.app/Contents/MacOS/Bose Updater`, an unstripped x86_64 binary
+with full C++ symbols) was disassembled. It carries the same `boseweb::ExternalFlasher` class,
+and comparing it to the tool settles exactly why the erase was refused.
+
+Three things in the tool are confirmed byte-for-byte correct against the helper:
+
+- `ExecuteCommand(signed char, QByteArray, bool)` builds `[0x03][opcode][payload]`, pads the
+  report to `0x3ff` (1023) bytes, reads back with a 50000 ms timeout, and reads the status at
+  offset 2. Identical to the tool.
+- `EnterBootmode` sends `ExecuteCommand(0x01, [0x01])`, i.e. `03 01 01`. Identical.
+- `EraseSqif(int partition)` sends `ExecuteCommand(0x02, [partition_byte])`, i.e.
+  `03 02 <partition>`. Identical.
+
+So neither the framing, the bootmode entry, nor the erase command was wrong. The difference is
+the **order**. The helper's update is a small state machine (`doUpdate`) that runs two states:
+
+1. `doUpdateFormatPartitions()` calls `EraseSqif(0)` with the argument literally zero (logged as
+   "Formatting ext"). This erases/formats **partition 0** first.
+2. `doUpdateFlashFile()` then calls `EraseSqif(target)` for the real partition (1 for the voice
+   prompts, 3 for the coefficients), then `WriteSqif()`, then `RunVerification()`.
+
+The tool did only step 2, on partition 1, and skipped step 1 entirely. Partition 0 is the
+format/partition-table partition of the external flash. Until it is erased, the SQIF is not set
+up to accept an erase of any target partition, so the device answers `03 02 01` with status
+`0x00`. That is the whole failure.
+
+### The fix, and its consequence
+
+The correct sequence is: `EnterBootmode` (`03 01 01`), then `EraseSqif(0)` (`03 02 00`, the
+format), then per target partition `EraseSqif(target)` and `WriteSqif()`, then reset.
+
+The consequence is important and changes the risk calculus. Erasing partition 0 formats the
+whole external flash, so it wipes **every** external partition, the voice prompts (1) and the
+ANC coefficients (3) together. After the format both must be rewritten. This is exactly why the
+official updater writes all external images in one session after formatting. So the earlier
+"safe" idea of writing only the byte-identical voice-prompt partition is not actually possible:
+the format that the erase requires also wipes the coefficients. A correct flow has to format,
+then rewrite both `ext_signed.xuv` (partition 1) and `acorn_coeffs_signed.xuv` (partition 3).
+Both files are archived here for every version, and the result stays recoverable through the
+official updater, but the operation is all-or-nothing, not a single safe partition.
 
 ## Consequence for the upstream plan
 
