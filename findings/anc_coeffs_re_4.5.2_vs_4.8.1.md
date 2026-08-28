@@ -91,6 +91,50 @@ stage**. This is a specific, testable statement: the delta is one appended filte
 bump, over an otherwise frozen coefficient set. Judging whether that stage helps or hurts requires an
 acoustic measurement, which is outside what the binary can tell us.
 
+## The fourth stage in depth
+
+The inserted block (827 bytes) is not opaque. It decodes cleanly into the same record format used by
+the rest of the file, so its internal structure can be read out completely.
+
+### Record framing
+
+Every coefficient record starts with a 6-byte header `0e 00 4f <group> 00 <sub>`:
+
+- `0e 00 4f` is the record type tag, the same tag used throughout the file (the main table holds 30 such
+  records, the trailing table holds 10).
+- `<group>` is a channel index: `0x01` then `0x02`.
+- `<sub>` is a sub-record index that steps `0x00, 0x20, 0x40, 0x60, 0x80` (five per channel).
+
+So the fourth stage is exactly **2 channels x 5 sub-records = 10 records**, which is why the `08 00 00 00`
+coefficient-group marker count rose by 10. Inside each record, the coefficients are grouped and each
+group is terminated by the `08 00 00 00` marker.
+
+This also explains the whole-file bookkeeping. A "stage" is 10 records. The main table carries 30 records
+(the first three stages), the header stage-counter reads `0x03` in 4.5.2, and 4.8.1 appends one more
+10-record stage and bumps the counter to `0x04`. Everything is consistent.
+
+### The two channels are identical
+
+Channel `0x02` is a byte-for-byte copy of channel `0x01` with only the group-id byte changed (0 differing
+bytes over 410 bytes once that single byte is ignored). Both earcups receive exactly the same new filter.
+The added tuning is symmetric, not a left/right correction.
+
+### The coefficients are biquad IIR filter sections
+
+Read as big-endian 32-bit fixed point (Q4.28), the values land squarely in the range of cascaded
+second-order (biquad) filter coefficients:
+
+- Numerator-side terms scale up to roughly plus or minus 8 (for example `+3.97`, `-7.94`, `+3.16`).
+- Denominator-side terms cluster tightly near `+1.0` (sub-record `0x60`: values `+0.99` to `+1.00`) and
+  near `-0.5` (sub-record `0x80`: values `-0.42` to `-0.50`).
+
+That near-unity and near-minus-one-half pairing is the classic footprint of the feedback coefficients
+(a1, a2) of a stable biquad. The larger numerator terms are the feed-forward gains. In short, the fourth
+stage is a small bank of cascaded biquad filters (an added equalization / cancellation-shaping stage),
+applied equally to both channels. The exact Q-format scale is inferred from the value ranges, so treat the
+individual decimal numbers as close approximations, not exact published constants. The framing, channel
+duplication, and coefficient ranges are certain.
+
 ## How to reproduce
 
 ```
