@@ -157,3 +157,28 @@ voice prompts). Issue 6 on the upstream tracker asks how. A fix would need:
    differs. That is the experiment the whole controversy never had.
 3. Resolve the coefficient-partition question above before treating any listening result as
    final.
+
+## Second flash: 4.5.2 (same day)
+
+Follow-up 2 was executed the same day, on the same unit, with the same procedure.
+
+- Image: `firmware/baywolf/BayWolf_4.5.2_stack_plus_app.dfu`, hash verified against
+  `findings/SHA256SUMS.txt` before flashing.
+- Starting state recorded this time (lesson 1 applied): `Main 4.3.6.105`.
+- `enter-dfu`, then `download`. The transfer completed and the device requested a
+  50.6-second manifest wait, essentially identical to the 4.3.6 run.
+- `leave-dfu -f`, and after re-enumeration at `05a7:40fe` the device reports
+  `Current firmware: Main 4.5.2.144`.
+- The `.144` suffix matches `REVISION="4.5.2.144"` in Bose's `index.xml`, the same
+  three-way provenance check that validated 4.3.6.
+
+One operational note: the download ran as a background task and the terminal session was
+interrupted during the manifest wait. The device simply stayed parked in DFU mode
+(`05a7:4020`) until `leave-dfu` was sent later. This confirms lesson 6 again: DFU mode is a
+stable parking state, not a timing-critical window.
+
+The coefficient caveat does not apply to this transition. The 4.3.6 and 4.5.2
+`acorn_coeffs_signed.xuv` payloads are byte-identical (proved in this repository's static
+analysis), so whatever the coefficient partition held under 4.3.6 is equally correct for
+4.5.2. The unit is now running the blamed release, ready for the listening comparison
+against the 4.3.6 baseline.
