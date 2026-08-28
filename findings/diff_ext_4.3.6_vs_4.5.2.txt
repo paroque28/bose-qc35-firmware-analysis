@@ -1,0 +1,15 @@
+A words: 1413664  range 0x0-0x15921F
+B words: 1413664  range 0x0-0x15921F
+only in A: 0   only in B: 0
+common words: 1413664  differing: 71 (0.0050%)
+contiguous changed regions: 3
+
+top 40 regions by size (word addresses, x2 = byte offset):
+  0x000004-0x000045       66 words  (bytes 0x0000008-0x000008B)
+  0x1363F3-0x1363F6        4 words  (bytes 0x026C7E6-0x026C7ED)
+  0x15921A-0x15921A        1 words  (bytes 0x02B2434-0x02B2435)
+
+first 20 regions in address order:
+  0x000004-0x000045      66 words
+  0x1363F3-0x1363F6       4 words
+  0x15921A-0x15921A       1 words

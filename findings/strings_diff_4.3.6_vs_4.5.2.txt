@@ -1,0 +1,53 @@
+=== strings ADDED in 4.5.2 (vs 4.3.6) ===
+Device informationl
+ERROR: handleTapSensorHubDiagMsg received a NULL Message
+Error status 0x%x returned from SensorHub Diagnostic Service
+Focus identifierl
+Gesture configuration
+Gesture information
+PGesture datal
+Sensor configurationl
+Sensor data
+Sensor information0
+Sensorhub initialized
+TfFile
+Unk SensorId 0x%02x,%u
+handleTapSensorHubDiagMsg received unexpected MessageId %d
+sd:%u,%u,%d,%d,%d,%d,%d,%d,%u
+sd:%u,%u,%d,%d,%d,%d,%u
+sd:%u,%u,%d,%d,%d,%u
+tapCachePrint overwrote buffer
+
+=== strings REMOVED in 4.5.2 (vs 4.3.6) ===
+----> %s: X: %6d, Y: %6d, Z: %6d, Acc: %u (%s)
+----> %s: X: %6d, Y: %6d, Z: %6d, W: %6d, Acc: %u
+----> %s: X: %6d, Y: %6d, Z: %6d, Xbias: %6d, Ybias: %6d, Zbias: %6d, Stat: %u
+----> GESTURE: DoubleTap
+----> GESTURE: HeadNod
+----> GESTURE: HeadShake
+----> GESTURE: SingleTap
+4J'Bwn
+Accelerometer
+Cal Status: CAL FAILED
+Cal Status: UNKNOWN STATUS
+GameRotationVector
+Gyroscope
+Magnetometer
+O0File
+Orientation
+Pgesture datal
+RotationVector
+Sensor Information0
+Sensor: 0x%02x, Ts: %06u, Len: %u
+SensorDataNotification: ClientID %u
+UncalMagnetometer
+Unk SensorId 0x%02x
+device informationl
+focus identifierl
+gesture configuration
+gesture information
+sd:%u,%u,%d,%d,%d,%d
+sd:%u,%u,%d,%d,%d,%d,%d
+sd:%u,%u,%d,%d,%d,%d,%d,%d,%d
+sensor configurationl
+sensor data

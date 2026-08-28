@@ -1,0 +1,16 @@
+<INDEX REVISION="01.00.00">
+  <DEVICE ID="0x4020" PRODUCTNAME="Bose QuietComfort 35 II">
+    <HARDWARE REVISION="01.00.00">
+      <RELEASE HTTPHOST="downloads.bose.com" LANGUAGES="en-us,es-mx,fr,de,zh-cn,ja,ko,it,pt-br,sv,nl,ru,pl" REVISION="4.3.6.105" URLPATH="/ced/baywolf/">
+        <IMAGE CRC="0XFFFFFFFF" FILENAME="BayWolf_4.3.6_stack_plus_app.dfu" LENGTH="1939792" NOFORCE="1" REVISION="4.3.6.105" SUBID="0" />
+        <IMAGE CRC="0X85BE229C" FILENAME="BayWolf_4.3.6_ext_signed.xuv" LENGTH="22618624" NOFORCE="0" REVISION="4.3.6.105" SUBID="1" TARGET="1" />
+        <IMAGE CRC="0X8CF951D5" FILENAME="BayWolf_4.3.6_acorn_coeffs_signed.xuv" LENGTH="32944" NOFORCE="0" REVISION="4.3.6.105" SUBID="2" TARGET="3" />
+      </RELEASE>
+      <RELEASE HTTPHOST="downloads.bose.com" LANGUAGES="en-us,es-mx,fr,de,zh-cn,ja,ko,it,pt-br,sv,nl,ru,pl" REVISION="4.8.1.321" URLPATH="/ced/baywolf/">
+        <IMAGE CRC="0XFFFFFFFF" FILENAME="BayWolf_4.8.1_stack_plus_app.dfu" LENGTH="1960636" NOFORCE="1" REVISION="4.8.1.321" SUBID="0" />
+        <IMAGE CRC="0X165726D1" FILENAME="BayWolf_4.8.1_ext_signed.xuv" LENGTH="22618624" NOFORCE="0" REVISION="4.8.1.321" SUBID="1" TARGET="1" />
+        <IMAGE CRC="0X2E786C2C" FILENAME="BayWolf_4.8.1_acorn_coeffs_signed.xuv" LENGTH="39568" NOFORCE="0" REVISION="4.8.1.321" SUBID="2" TARGET="3" />
+      </RELEASE>
+    </HARDWARE>
+  </DEVICE>
+</INDEX>

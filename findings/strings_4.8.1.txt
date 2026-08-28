@@ -1,0 +1,1353 @@
+-135lm
+153
+?333?333?
+J0ht)
+_!Tt{!t
+`dc
+pLpl%
+ppBPE
+                                                                
+    %-19s%-41s%s%s
+    %d connected
+    <No charging.  Attach complete.>
+    routing %d
+   Bad connector (>=%d).
+   Command ignored.
+  %-23s- %s
+  Already have this state.
+  Delayed.  CIP
+  Detach current
+  Done
+  New Connection
+  New val during init!
+  No port connected.
+  Not routed.  [almost] ignored.
+  Nothing else connected.
+  Only 1: %d
+  Preferred not connected!  Use %d
+  Replace Connection
+  Too many params (%d)!
+  Use \"preferred\" %d
+  [ADC Not completely ready.  Wait]
+  [part %d erase] FAILED!
+  ena_dis:   1 (enable) or 0 (disable)
+  sensor_id: 0 - %d, or * for all sensors,
+ $  !i 
+ %d preselected
+ '"'#'%'$'
+ .A&@0B
+ @@bo
+ B "!&
+ SRC: HB
+ `xo p
+ `xo p!
+ l5)"<6
+ running: 
+ uiQ]*N
+!"{R)"
+!#["Bjo
+!& &#&"&
+!'D'E'
+"%"6"~ ^ B$
+"%(+.147:<?BDGJLOQTVX[]_acegijlnoqrtuvwyzz{|}~~
+"7!C"'!#
+"B""#&
+"B""#&#
+"N 0[-[
+#4#;#K#O#S#X#Z#`#a
+#TwUSV
+#yY/Jks<\
+$B$"%&
+$UXU&UY
+%/Pp%/
+%01u%03u
+%10s*** WARNING *** AltIF Never Used!
+%10s??? WTF Att: [0x%X] ???
+%10s??? WTF CPC: [0x%X] ???
+%10s??? WTF Dis: [0x%X] ???
+%10s??? WTF: DETACHED ???
+%10sBM=%X, Func=%X
+%10sCh H/H
+%10sChg Port [wait]
+%10sDed Chg
+%10sDed Chg: Lim=%d
+%10sDetached.  Lim=0
+%10sH/H
+%10sMaybe Apple Charger?
+%10sNON COMPLIANT [%d]!
+%10sNon-USB-Compliant:  Lim=%d
+%10sNot sure (yet):  Lim=%d
+%10sOverridden.  Lim=%d
+%10sPort not attached at Init? (try %d) 
+%10sREAL H/H inferred!
+%10sReal H/H (Protocol)!
+%10s[Not Sure Yet]
+%10sbMaxPower=>%d
+%12s2.0/2.0: Lim=%d
+%12s2.0/2.68: Lim=%d
+%12s2.0/High:  Lim=%d
+%12s2.0/Low: Lim=%d
+%12s2.0/Mid:  Lim=%d
+%12s2.0/unk.  Lim=%d
+%12s2.68/2.0: Lim=%d
+%12s2.68/2.68: Lim=%d
+%12s2.68/High:  Lim=%d
+%12s2.68/Low: Lim=%d
+%12s2.68/Mid:  Lim=%d
+%12s2.68/xx.  Lim=%d
+%12sBAD VBUS PIO LINE 0x%X
+%12sCheck PIN 0x%X
+%12sDet: Lim=%d
+%12sHigh/xx. Lim=%d
+%12sLow/xx. Lim=%d
+%12sMid/xx. Lim=%d
+%12sReally disconnected!
+%12sRetry initial connection sync later.
+%12sSusp: Lim=%d
+%12sTOO MANY INITIAL CONNECTION RETRIES!
+%12sUnk/xx.  Lim=%d
+%12scfg: Lim=%d
+%12sp/d/a: Lim=%d
+%6sPeer MAC
+%8s:Port attached.  Cancelled %d msgs
+%c%d) %02x:%02x:%02x:%02x:%02x:%02x  %04x %04x %04x %04x %04x %04x %04x %04x  
+%c%d) %02x:%02x:%02x:%02x:%02x:%02x  XXXX XXXX XXXX XXXX XXXX XXXX XXXX XXXX  
+%d, %d, %d
+%s   Message=%d bytes
+%s   bad magic value 0x%02X%02X
+%s - Sink locked! Set pending message!
+%s - stream is too large
+%s Response payload mismatch (%x != %x)
+%s VPA: 0x%x
+%s Wrong dialog ID (message: %06lu != active: %06lu)
+%s button: %d
+%s*** SIG %d MORE THAN %d ***
+%s*** WRITE %d MORE THAN %d ***
+%s*BM NOT FOUND*
+%s: %d
+%s: %s state for feature 0x%x
+%s: %u
+%s: %x
+%s: %x (%x)
+%s: 0x%04x
+%s: 0x%04x 0x%02x 0x%06lx
+%s: 0x%x
+%s: Active connection found
+%s: Active connection not found
+%s: AlexaResetBLEConnectionCommand (%s)
+%s: BAD USB SET COMMAND 0x%X
+%s: Canceled %s connection upgrade timer
+%s: Connected: %d, Voice active: %d
+%s: Could not determine payload size.
+%s: Decode Failed.
+%s: Error code %d received
+%s: Extended length needlessly set for payload length of %d
+%s: Feature %x not %s
+%s: Invalid command: %d
+%s: Invalid packet (version: %d, stream: %d, flags: 0x%x)
+%s: Message with mismatched payload. (tag %x != payload %x)
+%s: NO CONNECTION RETURNED
+%s: New Connection: No room for conn %d
+%s: No packet to extract
+%s: Not ack'ing ack
+%s: Packet length %u > size of buffer: %u
+%s: Route not allowed (%d/%d/%p/%p)
+%s: Skipping upgrade of conn %d. Same transport!
+%s: Start %s connection upgrade timer.
+%s: State feature 0x%x changed from %d to %d
+%s: SynchronizeState (%s conn)
+%s: SynchronizeState failed (%s conn)
+%s: TRANSPORT UPGRADE FOR UNKNOWN CONNECTION
+%s: Upgrade of disconnecting conn %d
+%s: VPA param %d != current VPA %d. Skipping
+%s: invalid configuration (error code 0x%02x)
+%s: invalid feature (0x%x)
+%s: invalid index (%d) 
+%s: payload encoding failed.
+%s: reset %s connection 
+%s: unsuppported feature (0x%x)
+%s: upgrading connection not found 
+%s:0x%x
+%s:vpa %u->%u
+%s:vpa invalid input %u
+%sASSIGNED WRONG CTL IF # (SHOULD BE %d IS %d)
+%sASSIGNED WRONG DATA IF # (SHOULD BE %d IS %d)
+%sAltIF not used
+%sAltIF(%X) used by Ctl
+%sAltIF(%X) used by Data
+%sAltIF(%X): Ctl=>%X
+%sAltIF(%X): Data=>%X
+%sBAD AUDIO DATA MSG %X.%X.%X.%X.%X ***
+%sBAD STATE %X
+%sBAD USB SET STYLE 0x%X
+%sBad Query command 0x%X
+%sBad State %X.%d
+%sBad command %X!
+%sBad msg len (%d)
+%sBad report #%d
+%sBootMode %d
+%sCAN'T ADD CTL ENDPOINTS!
+%sCAN'T ADD CTL INTERFACE!
+%sCAN'T ADD DATA ENDPOINTS!
+%sCAN'T ADD DATA INTERFACE!
+%sCAN'T FLUSH FLASH DATA!
+%sCan't FLUSH response sink!
+%sCan't STREAMMOVE flash data!
+%sCan't get USB_Config!  Assume no sequence number.
+%sCan't get USB_Config!  Assume sequence numbers present.
+%sCan't get response buffer!
+%sCan't verify ext flash: 0x%X
+%sCan't write sig in state %X
+%sClaim failed]
+%sConnecting 0x%p
+%sCtl Msg: %X.%p
+%sData Msg: %X.%p
+%sDisconnect
+%sDisconnect ignored
+%sErase 0x%02X
+%sErase partition #%d...
+%sErase[%d]
+%sFlush failed
+%sFound BM in entry %d
+%sGetLineCoding
+%sInitialize
+%sInvalid erase target 0x%02X
+%sMSPV(%d,%d,%d)
+%sMute states match.  Ignored.
+%sMute(usb)%d
+%sNo bytes to write!
+%sNo signature to write!
+%sNo signing sink
+%sOpenDefaultPart...
+%sPartition table size = %d bytes
+%sQuery.Mute[%d]
+%sQuery.Vol.%d[%d]
+%sRespond to %X with %X
+%sSFW(%d)
+%sSLC: BAD LEN (%d)
+%sSSF(%d)
+%sSTUCK WAITING FOR MORE DATA!
+%sSample Rate %ld -> %lds/sec
+%sSample Rate same as before.
+%sSend %d events to host
+%sSendBreak(%d)
+%sSet.Vol.curr %d
+%sSet.mute.curr %d]
+%sSetControlLineState(%d)
+%sSetLineCoding %ld/%d/%d/%d
+%sSetVrfMth with BAD METHOD %d
+%sSetVrfMth->%d
+%sSign Partition
+%sSlack failed
+%sStart Cmd %X[%d]
+%sUSB Sequence Numbers NOT present.  Can't have audio.
+%sUSB Sequence Numbers present.  Good.
+%sUSB Sequence Numbers=%d
+%sUnrecognized Ctl msg (0x%X)
+%sUpdate to mode %d
+%sVol(usb) matches Sys Vol(%d).  Ignored.
+%sW(%d,%d,%d,%d)->%d
+%sWrite
+%sWrite Init(%d)
+%slist: %d%s%s
+%slocVol->%d
+%susbAudioResume()
+%susbVol%d(%d)
+%u Unknown
+%u.%u.%u
+&$&#&"&
+&%&&&'&(&)&
+&&'"d&e"
+&','%'''-''
+&(*pAlexaTestGPB).bBuiltIn      : %p
+&*^[-m
+&?!h!i!k!n"
+&B&"'&
+&B&"'& 
+&D'M'O'P'L
+&]e)P9
+&n&p&r&v&h&l&
+&pAlexaTestGPB->bBuiltIn        : %p
+'#"zo#
+'&&"8
+'&&"e&d"
+'9I8!D
+'cb14476 - May 19, 2020  2:44:52.690 PM
+'q;v0>n
+(%hW-EW
+(&'&*&)&
+(B(")&
+(ELqlp,p
+(N$mLtZ
+(Re)Check Initial Connection
+(b%1#r
+(b%4Sr
+)'*'+'
+)2xO "
+)2xd 0
+)4x[ P
+)CxO 3
+)D?]"#
+* BAD PENDING CONNECTOR %d
+*" P6" 06" 6
+*"."2"
+*"h"l"."p"2"
+*&+&,&-&.&/&4&8&
+** CAN'T GET MINITAP OUT BUFFER!
+*** %sCTL MESSAGE NOT FOR AUDIO! ***
+*** %sCTL MESSAGE NOT FOR CDC! ***
+*** %sDATA MESSAGE NOT FOR AUDIO! ***
+*** %sDATA MESSAGE NOT FOR CDC! ***
+*** %sMMD NOT FOR EXTFLASH! ***
+*** %sMMS NOT FOR EXTFLASH! ***
+*** BAD MUTE REQUEST STYLE 0x%X!
+*** BAD OVERRIDDEN PORT TYPE 0x%X.  Ignoring.
+*** BAD OVERRIDDEN STATE 0x%X.  Ignoring.
+*** BAD VOLUME REQUEST STYLE 0x%X!
+*** HID: CLASS MESSAGE NOT FOR HID! ***
+*** Huh?? How can we be !overridden, but Rem_Port=0x%X?
+*** TODO: usbAudioSuspend
+**** WTF *** BAD USB STATE 0x%X
+**CHECK AUDIO: %p.%p=>%p(%d)
+**GetRep.BootMode CAN'T GET BUFFER!
+**GetRep.MiniTAP WITH NOTHING PENDING!
+*7)C*')#
+*B*"+&
+*Zu$#T
+*b0kz[W
++ +#+$+%+&+'+(+++,+-+.+/+0+1+2+
++#,#*#-
++4%;;X**
++tQ@+tQP;,Q 9$
+,45.QGHA[
+,: :*::
+,?P@,OQ
+,B,"-&
+,X{k(%
+,p5pmw
+-"0&2&4&8&
+-&0"1"
+-&k&n"0"
+-'-/-=-E-I-Q-[-_-k-q-s-y-
+-/P@]/
+-A56; >
+-Sh))m
+.#-#1#
+.#.).7.E.I.O.W.[.a.e.i.q.y.}.
+.?HUH? (%X)
+.B."/&
+.ExtFlash
+.ExtMicro
+.Internal
+.qp@$
+/!/!/'/-///7/=/E/K/O/U/[/]/c/e/g/m/s/{/
+0&1&2&4&3&
+0&1&4&8&
+0&2&4&8&
+0)0-01090=0C0I0M0Q0U0Y0_0e0k0q0{0
+0.i20f0
+0B0"1&
+0BbBBC"[
+0lq4[S%
+0x%02X 
+0x%04x
+0x%04x 
+0x%04x 0x%02x 0x%06lx
+0x%04x, 0x%04x
+0x%08lx
+0x%08lx, 0x%08lx 
+0x%x%x 0x%x 0x%x%x%x
+1!1+1/13191A1E1K1Q
+2!232?2E2O2Y2_2i2o2}2
+2&4"8"
+2B2"3&
+2D!%AjD5
+32NzeY6h
+3a3g3o3w3
+3gjf/H
+4&8&r&v&
+4)4/474=4A4O4W4_4g4m4s4}4
+44'37('4
+5#5/5;5A5E5I5O5S5W5[5a5k5o5s5y5}5
+5&s&6&u&
+5C4S'P
+5ZgxUZ
+6D6WC6
+6(2kz,
+6)6-61676?6C6I6O6W6_6c6g6o6u6{6
+6eSm$%M
+8"8,8.868:8B8H8L8R8V8Z8b8n8v8|8
+85Xg\U
+9!8'+&
+9'9-939=9I9M9W9_9g9k9m9m9o9u
+9+'=K<
+9>K:Us;g{<t
+9?8R+P
+:&9"I8
+:69B:&9"
+:69Bx&w"
+;";,;6;8;B;H;N;V;d;l;~;
+;7.727:7D7^7h7t7x7
+;BWoSn
+<K<]<c<k<q<w<}<
+<OP`|?p
+<QvfG-^
+<category><value> demo commands
+=&>&7&5&6&8&
+=&>&7&5&6&8&@
+='<+;#
+=3TgNL
+=:F:H:R:X:^:j:r
+>=E>~p>
+>IC Offset Results: %d, %c, %d, %c, %d, %c, %d, %c, %d, %c, %d, %c
+?!@%=!>%
+??? %sCtl Class msg %X.%p
+??? %sData Class msg %X.%p
+??? %smsg %X.%p
+??? HID: Class msg %X.%p
+??? USB Core msg %X.%p
+@ bG(b
+@#'"#$
+@''&##
+@.'-#574C
+@@AB(B`AAC
+@E&D" 
+@F'E#G
+@Hou$I
+@M'L#D
+@V'U#Y
+@s@s@s@s
+A&@ffLp
+A0 !Q?
+A2DP  - %d
+A2dp: %d
+ADC %u: 0x%03x
+ALEXA -> 
+ALEXA <- 
+ALEXA Un-handled msg id[%x]
+ANR Active
+ANR Disabled
+ANR Off
+AT+BLDN
+AT+CHLD
+AT+CHLD=0
+AT+CHLD=1
+AT+CHLD=2
+AT+CHLD=3
+AT+CHUP
+ATD+15555555555;
+AVRCP - %d
+Accl: %c, Gyro: %c, Mag: %c
+Alexa Query Timeout: Stopping
+Alexa Rfcomm Sink %x invalid
+Alexa Rfcomm cannot claim sink space
+Alexa Rfcomm: Message sent
+Alexa Rfcomm: not connected
+Alexa Rfcomm: sink locked
+Alexa VPA: The device does not have a bluetooth connection or vpa is not setup.
+AlexaAudioDisconnected
+AlexaCheckA2dpStatusAndConnect: Device already connected; Get name
+AlexaCheckA2dpStatusAndConnect: Device not connected; Connecting
+AlexaCloseTransportConnection: closing connection [%04x %02x %06lx] tp[%d]
+AlexaCtrlPktSend: sending ACK: %d
+AlexaCtrlPktSend: sending CMD: %d
+AlexaGetConnectionBySink
+AlexaGetConnectionBySink: Conn found tp[%d]
+AlexaGetSpeechState: %u
+AlexaGetTransportLink: RFCOMM
+AlexaGetTransportLink: iAP
+AlexaHandleAck: Response with non-success error code %x
+AlexaHandleCallingCommand CMD: %s
+AlexaHandleConnChanged: Conn [%04x %02x %06lx] tp[%d]
+AlexaHandleConnChanged: Conn not Active
+AlexaHandleConnChanged: Final Disc
+AlexaHandleConnChanged: New Conn %d is Active
+AlexaHandleConnChanged: New Conn [%04x %02x %06lx] tp[%d]
+AlexaHandleConnChanged: Other Conn now Active
+AlexaHandleConnChanged: Tp Disc [%04x %02x %06lx] tp[%d]
+AlexaHandleConnChanged: Upgraded Conn %d is Active
+AlexaHandleConnectedCfm: Ignoring unexpected new transport conn %d.
+AlexaHandleMediaControlCommand, command = %x
+AlexaHandleOverrideAssistant: Override Failed.
+AlexaHandlePacketBuffer: [%04x %02x %06lx] tp[%d]
+AlexaHandlePacketBuffer: error - leftover bytes in packet buffer.
+AlexaHandlePacketBuffer: error decoding packet.
+AlexaHandleVoiceCommandStop: reason %d
+AlexaIsTransportSwitched: retVal %d
+AlexaIsTransportSwitched: success
+AlexaIsVoiceActive: %u
+AlexaSendPacketToApp: Packet was not sent!
+AlexaSendPacketToApp: [%04x %02x %06lx] tp[%d]
+AlexaSendPacketToApp: no packet data to send or free
+AlexaSendPendingMessages: Connection is locked. Cannnot send messages.
+AlexaSendPendingMessages: No connection found
+AlexaSendPendingMessages: Warning - unknown message flags set. conn->pendingMsgs = %x
+AlexaSendStopSpeechMsg - Sink locked! Set pending message!
+AlexaSendTransportVersionExchangeMsg: sending command.
+AlexaSetResumeMusicFlag: %d
+AlexaSetSendMediaControlFlag: %d
+AlexaTestGPB_GetMemConditional: err, sz = %d, id = %d
+AlexaTestGPB_Init ERROR mem
+AlexaUpdatePluginParameters seq_n %d
+AlexaUpdateTransportLink: Failed
+AlexaUpdateTransportLink: RFCOMM
+AlexaUpdateTransportLink: iAP
+Allocate RFCOMM CFM: 0x%X
+App Battery Level Indication: %u
+Arrrr matey!
+B C#[^
+B@@[P"
+B@bA#[
+BARS: %u.%u.%u
+BDSP batt logic: %u
+BDSP data: 0x%06x
+BDSP version: %u
+BDSP volume: %u
+BIGvmApp
+BLE Advert Intervals: Fast = %d, Slow = %d in counts
+BLE TPUT: %u
+BMI Accl Offset: %d, %d, %d
+BMI ChipID: 0x%02X
+BMI Gyro Offset: %d, %d, %d
+BMI Sensortime: 0x%02X, 0x%02X, 0x%02X
+BMS State: %s
+BQ0tJQ
+BT addr
+BTAF HDR (EXT)<- 
+BTAF HDR (REG)<- 
+BUDstate: %d
+BUDtype: %d
+BUUSUd
+Bad 'RS' parameter(s) '%s'
+Bad 'db' parameter(s) '%s'
+Bad Change_USB_Volume direction (%d)
+Bad Pending_Cmd_Response 0x%X
+Bad state (0x%X) to measure data lines!
+BattExtender: %u
+Beyond end of PDL!
+Bt@4MEZ
+BudPeerAddr: 0x%04x 0x%02x 0x%06lx
+C"[(FL'
+C#CX%j-
+CG initialized
+CSR CVC CONTROL
+Cal Status: CAL PASSED
+Cal Status: NOT CALIBRATED
+Calls AlexaSendTestMessages():
+Can't SetMessageDigest!
+Can't fetch RUNTIME_STATS!
+Can't malloc signature space!
+Can't select port when in state %d
+Can't test data lines in state %X
+Cannot enable timer with 0 timeout.
+Ceb9ki
+Cerebro %s
+ChargerConnected: %s
+ChargingFlags: 
+ChargingRegion: %u
+ChargingState: %u
+Command too short.  Ignored.
+Config:%-8u
+Connected
+Could not find RFCOMM channel with this service_handle!
+Could not get unallocated connection slot for channel=0x%X
+Couldn't open %s
+Current CNC Index: %d
+Current CNC Index: N/A
+D"E"B"C"
+DAE/&@
+DSP is OK
+DSP logging
+DSP read/write
+Data from unknown connection
+DataRead: %u
+DevInfoResp: ClientID %u, Sensors 0x%08lx, Gestures: 0x%08lx, maxActiveSensors: %u
+Device informationl
+Disable AAC and reboot for TWS SRC Qual cmd is NOT IMPLEMENTED!!!
+Disabled debug IDs: 
+Disconnected
+DynExLim: %u
+E$E"fE>
+E(GLplp
+E0B"@"/
+ECYdUJ
+ERROR: handleTapSensorHubDiagMsg received a NULL Message
+EY$1.p
+Ee[Ou5X
+Eldexp
+Enable page on link loss for TC_SRC_SET_BV_05 of TWS Qual cmd is NOT IMPLEMENTED!!!
+Enabled debug IDs:
+Entry:%d
+Error status 0x%x returned from SensorHub Diagnostic Service
+Error: Reading %s offsets from IMU failed
+F.tUF?
+FAIL: I2C ACCESS LIMIT REACHED == %u
+FAILED!
+FLAG connected:     %u
+FLAG enumerated:    %u
+FLAG suspended:     %u
+FULL_DRIVE_DOWN
+FULL_DRIVE_UP
+Failure
+Fdg0,Wb
+FffS33`
+Focus identifierl
+FpCP@0Alp
+Friendly name
+G3E%h6
+GATT ALEXA Server init failed
+GATT_ALEXA_CONNECT_IND
+GATT_ALEXA_DISCONNECT_IND
+GATT_ALEXA_MSG_WRITE_IND
+GATT_ALEXA_READ_IND
+GRANT_TO_KAL
+Gesture configuration
+Gesture information
+Give CSRPM parameters: Chg=%d,current=%d
+Gone beyond end of RTS
+Got all USB Cable state.
+H:{:}:
+HB Sending Hibernation to 0x%04x 0x%02x 0x%06lx
+HDLplp
+HDO~Wq`/i
+HFP   - %d
+HID:   Key=>%X
+HID:  Ext-Part Infos; pn=%u
+HID:  Key %s.
+HID: %04X=>%04X
+HID: ??? Get_Report[%d]
+HID: ??? Set_Report[%d]
+HID: AltIF not used
+HID: AltIF(%X) used
+HID: CAN'T ADD ENDPOINTS!
+HID: CAN'T ADD INTERFACE!
+HID: CAN'T ADD REPORT DESCRIPTOR!
+HID: CAN'T flush CCD Buffer!
+HID: CAN'T get CCD Buffer!
+HID: CAN'T get CCD Sink!
+HID: Calculate Debug Key from SN '%s'
+HID: Class Msg: %X.%p
+HID: Debug
+HID: Debug Key=%04X
+HID: Does device key match '%s'?
+HID: FactDef
+HID: Get.BootMode
+HID: Get.MiniTAP
+HID: Get_Idle[%d]
+HID: Lang Avail
+HID: Lang Cfg
+HID: MMD w/ NULL Msg!
+HID: Match in slot %d
+HID: Msg has %d data bytes
+HID: NO MATCH FOUND!
+HID: PDL
+HID: Platform
+HID: RTS
+HID: Report starts with %X, not MiniTap!
+HID: Report starts with %X, not TAP Report!
+HID: Serial Number
+HID: Set.BootMode[0x%X]
+HID: Set.MiniTAP w/ %d cmd bytes
+HID: Set.TAP w/ %d cmd bytes
+HID: ShipMode
+HID: TAP Command when not enabled
+HID: Unrecognized class message %X
+HID: Version
+HID: Version.ExtFlash
+HID: Version.ExtMicro
+HID: Version.System
+Handle CL_RFCOMM_CONNECT_IND
+Handle CL_RFCOMM_DISCONNECT_CFM
+Handle CL_RFCOMM_DISCONNECT_IND
+Handle CL_RFCOMM_PORTNEG_IND
+Handle CL_RFCOMM_REGISTER_CFM
+Handle CL_RFCOMM_SERVER_CONNECT_CFM
+Handle CL_SDP_REGISTER_CFM
+Handle CL_SDP_UNREGISTER_CFM
+Handle MESSAGE_MORE_DATA
+HandleStartSpeech error_code %d
+HandleStopSpeech error_code %d
+Hfp : %d
+Hibernation flag is %s. Current Power state is: %d
+Hibernation flag is disabled!
+Hub Chip Control: 0x%02X
+Hub Chip Status: 0x%02X
+Hub Int Status: 0x%02X
+Hub RAM Version: 0x%04X
+Hub ROM Version: 0x%04X
+Hub Status: 0x%02X
+I%@Rgf
+I@2'1#
+IB Result: %c
+IC Offset: %c
+IMU %sinitialized
+IMU initialized
+IMU not initialized
+IMU: %04X.%02X.%02X.%08lX
+I[+leP
+Id:%-2u
+Idle: %d
+Init got %d @ %p
+J&I"F8
+K"Y"p"
+K"h"l"
+K&L&M&N&O&P&Q&S&
+KEY: 0x%02x STATE: 
+K^!%U'
+L9>K9>KP
+LED control
+LQvXo(c
+Last key: 0x%02x
+Leds: %u
+Len:%-4u
+Link key
+LocMute%d
+Lplp"@
+M",0&:,+
+M"O"N"
+M"O"N"Z
+M&N&O&P&Q&
+MASK: %08x
+MZ6!Mm
+Main %s
+Master: %x
+MicVariant: %u
+Min:%-8dMax:%-8d
+NO TAP EOL!
+NULL, %d
+No Active Conn - Encode Only
+No DEBUG channel configured!
+No REGISTERING Alexa RFCOMM channel to write service_handle to!
+No stats found
+No task
+Notification:
+NotifySpeechState %d
+Number of CNC Steps(s):  %d
+O"n4"2
+OTA state: %d
+One RFCOMM channel already REGISTERING. Marking channel as PENDING: %x
+PGesture datal
+P 9?P@Y
+P0)/Pp)/P
+P2P discoverable: %u
+P2P searching: %u
+P2PEnabled: %u
+P2PProductType: %u
+P2PRole: %u
+P2PState: %u
+P?PP@/
+PIO debounce mask = 0x%lx
+PP&/X%
+PRESS  
+PS key empty.
+PSKEY read/write
+Packet Buffer NULL!
+Peer  - %d
+Processing
+Profile ID: %u
+Px}ep@8`
+Q 93QP;2
+Q 9BQP;8
+Q \)Q0,d
+Q i<D 
+Q iKD 
+Q"P"S"R"
+Q&P&S&R&
+Q&U6YF]W
+Q(S\qPpIMML
+Q+*l6H.%6
+Q@iiQP;
+QP;&Q 9
+Qk?NUh.
+Queue is Empty
+Queue is Empty Again
+R%B%C%D%E%F%G%H%I%;
+RELEASE
+RETEST CP!
+RETEST H/H!
+RFCOMM server channel not allocated successfully!
+Rate:%-8u
+Raw HFP: %u
+RawMax:%-8d
+RawMin:%-8d
+ReInit LPM
+Read CC reg %x: %u
+Read CG reg %x: %u
+Read from IMU:    [%s] (x,y,z, radius): (%d,    %d,    %d,    %d), acc: %d
+Read from PSKey:  [%s] (x,y,z,radius): (%d, %d, %d, %d)
+Read heart rate parameters
+Register SDP CFM: 0x%lx
+Registering PENDING Alexa RFCOMM channel 0x%X
+Registering channel 0x%X in SDP
+Reinforce VPA Link Policy
+Restore original settings and write to config for end of TWS Qual cmd is NOT IMPLEMENTED!!!
+Rpv$\
+SC R -cb
+SC-Rfd2u
+SCbRfc1wvz
+SCbRfc1wSC-Rfd1uSC-Rfd2u
+SDP unregistered for channel 0x%X!
+SPECIAL_FUNC
+STRONG_DRIVE_DOWN
+STRONG_DRIVE_UP
+Sensor configurationl
+Sensor data
+Sensor information0
+SensorCfgResp: ClientID %u, errorCode %d
+SensorConfigReadResp: ClientID %u, Cnt %u
+SensorInfoResp: ClientID %u, Type: %s, Cnt %u
+Sensorhub initialized
+Set_Idle[%d]->%d
+Setting charger to draw %umA from USB, put %umA into the battery at %umV
+Setup the test parameters for TWS SRC Qual cmd is NOT IMPLEMENTED!!!
+Slave: %x
+Smpl:0x%04x
+SpeechState: Out of seq %d -> %d
+SpeechState: Unknown state %d
+SpeechState: transition %d -> %d
+Start Speech Message not sent
+Streaming
+Success
+Supported Common Commands:
+Supported HED Commands:
+Supported NRT Commands:
+Suspended
+SwS!]+
+T+UWTc
+T5I=K)
+T<%J?
+TAP HFP: %u
+TAP: kp - 0x%02x
+TAP: sw to AUX
+TAP: sw to NONE
+TOO MANY MINITAP BYTES WITHOUT A NULL TERMINATOR!
+TTS Disabled.
+TWSState: %u
+Temp: %d C
+Ti1.m-
+U&r&v&
+USB Cable State %d->%d
+USB Charging Status
+USB Core Msg: %X.%p
+USB Core: ATTACHED
+USB Core: AltIF %d.%d
+USB Core: Calc_Port_Current [%X,%X,%d,%d,%d,%d]
+USB Core: Call Start Attach
+USB Core: DECONFIGURED
+USB Core: DETACHED
+USB Core: Disambiguate_Port [%X,%X]
+USB Core: ENUMERATED
+USB Core: Init
+USB Core: No USB Functions configured for BM %d
+USB Core: SUSPENDED(%d)
+USB Core: Start Attach
+USB Core: TimeCriticalInit
+USB Data Lines: %d, %d
+USB audio initialized
+USB audio not supported
+UU"[bB
+UU"[bBA
+UU"[bBBC
+UUUU3333
+UV9xXYR
+UW"mEY^
+Unhandled Message: 0x%X
+Unk BARS Resp: %d
+Unk SensorId 0x%02x,%u
+Unknown state (0x%02x)
+Unregister SDP CFM: 0x%lx
+Unsupported VPA Call CMD %d 
+Update NVM: %c
+V&U&X&W&
+V7UCV'U#W
+Vb*:^-YZ
+Vbatt: %u mV
+Vpeak: %u
+VrawTrack: %u
+W)hzf3
+WEAK_DRIVE_DOWN
+WEAK_DRIVE_UP
+WS state: 
+W])nwh
+With  8-bit length BTAF Header:
+With 16-bit length BTAF Header:
+Wlt/Vr
+Word not saved! Key: %i Index: %i Value 0x%04X
+Wrote %x to CC register %x.
+Wrote %x to CG register %x.
+X`8`/8
+Y&X&K&
+Y1Q )q
+YTAQ*-H
+YaGy.y=e
+Yaya/9C
+Z'Y'T'U'
+Z+Y+T+U+
+ZZxo `!
+Zbb{#q"/z
+[ [${(c
+[%06ld.%03ld] 
+[(k%Y$
+[BAD %d]
+[SKIP]
+]JvR&^
+]r=|(R
+]{(}MP
+^.bMZ7
+^Mm,0^
+^eX\7E[
+^ohfkz
+^{Aqpe
+_`<IaT
+_handle_UQ - %d
+`c `.h
+`*V5cw
+`-75p8
+`M'L#O
+`[H+~Mw-2
+accel: %u, mag: %u, gyro: %u
+ad <pin>
+address 0x%02X 
+ae <mask>,<state>
+alexaBleHandleConnInd
+alexaBleHandleDiscInd
+alexaBleHandleIncomingData
+alexaGetConnByBdaddr: i=%d, bdaddr %04x%02x%06lx 
+alexaHandleGattDisconnect
+alexaRegisterServiceByChannel - did not register RFCOMM channel %x
+alexaRfcommHandleConnectInd: 0x%X
+alexaRfcommHandleDisconnectInd, could not find RFCOMM channel with this sink!
+alexaRfcommHandleDisconnectInd: 0x%X
+alexaRfcommHandleIncomingData: %u
+alexaRfcommHandleServerConnectCfm, could not find RFCOMM channel with this sink!
+alexaRfcommHandleServerConnectCfm: 0x%X
+alexaRfcommIndicateConnStatus: state=%d
+alexaRfcommInit
+alexaSendDataOverBle
+ao <state>
+applaunch
+ar 6,sensor_id,ena_dis[,sensor_id,ena_dis...]
+as <rate>
+asynchronous echo
+asynchronous event monitoring
+audiobusy: %u
+auto off
+autooff: %d
+autooff: %u
+aux: 0
+aux: 1
+auxcable: %d
+auxcable: %u
+b4LYXW
+b=.0Xd
+bAfVZ8
+bBBC"["B
+ba <command>
+bass control
+bass: %d
+battery command
+battery status: 0x%04x
+batteryfullflag: %s %u
+batteryfullflag: %u
+bc <value>
+bd <dev>,<addr>
+ble cancel Advertizing
+ble role switch to scan mode
+ble switch back to advertizing
+bluetooth address
+bluetooth control
+bm 0|1|6|7
+bmap: %d
+bmaxpower
+bootmode: %u
+bt <command>
+bt slot %d - %d
+bt slot %u:
+btaf hdr (0): %02x %02x %02x
+btaf hdr (1): %02x %02x %02x %02x
+bytes: %d
+cTMWF#
+cable connection
+cable: %d
+cable: %u
+cc 1|2|4|8
+chargecurrent: %d
+chargecurrent: %u
+chargelevel: %u
+charger status/control
+charger: %u
+chargestate: %s
+charging
+chgcable: %u
+ck 1,<value>
+cmd %d
+color: %u
+color: %x
+complete: %u
+connect
+connected: %u
+connlib 41
+connlib 42
+connlib 43
+connlib 44
+connlib 45
+connlib 46
+connlib 47
+connlib 48
+connlib 49
+crystal trim
+cs <command>,<state>
+current: %s%d
+cyclecount: %u
+dacgain: %u
+data: 
+data: 0x%02X 
+db [0|1]
+debug ID %d: %s
+debug print control
+debug: %s
+debug: %u
+dec in, encBuf (with BTAF): 
+dec in: len %d
+dec out, ctrlEnv : 
+dec out: (cmd %d)
+dec out: (wh  %d)
+dec out: ctrlEnv
+dec-only ptr error
+dec: ERROR extract failed
+dec: WARNING extract found no command
+deconfigured: %u
+describe commands
+device
+di:%u,%u,0x%02x,%u,0x%04lx,0x%04lx,%u,%u,%u,0x%02x
+disabled
+discharging
+disconnect
+discov
+display version
+dl [0|1]
+dminus: %d
+doesn't match
+dp <push/pull>,<bandwidth>,<key_id>,<value>,<key_index>
+dplus: %d
+ds <module_id>,<parameter_id>,<value>
+dvs configuration complete, status: %02x.
+eC&'li
+em %d,%d
+em [0|1]
+em: %u
+ena_dis parameter must be 0 or 1.
+enabled
+enabled: %d
+enabled: %u
+enc helper: enc err
+enc helper: in err
+enc helper: mem err
+enc helper: sz err
+enc in, ctrlEnv: 
+enc in: cmd %d
+enc in: len %d
+enc in: wh  %d
+enc out, encBuf: 
+enc out: len %d
+enc-then-dec ptr error
+enc: ERROR bitmap 0x%02x
+enumerated: %u
+extract, ctrlEnv: 
+extract: cmd %d
+extract: decodePass %d
+extract: len %d
+extract: wh  %d
+f&LVVb
+factory defaults
+faultstatus: 0x%04x
+fffS33]UU
+finalboothmfgmode: %u
+flags: 0x%04x
+free: %u
+g#Hkf"
+gd:%u,%u
+generate USB serial traffic
+gg4awi^
+gi:%u,%d,%d
+got %d @ %p, h = %p
+gp <pio>,<state>
+gpio control/status
+gpio: %u
+gpio_pin_config:%u %u
+handleTapSensorHubDiagMsg received unexpected MessageId %d
+hd ipc, xx,xx,xx
+header
+hfp source: %u
+hfp status: %u
+hr params: 
+huh '%c'(%X)?
+h|4p~=W
+i7[*gf"
+ig <mask>,<state>
+ignore keys
+im dvs,sensor_id,ena_dis[,sensor_id,ena_dis...]
+imu_read_acc
+imu_read_offsets
+j"k"l"m"
+key simulation
+kp <key>,<hold>
+ks <>, ks <arg1>, ks <arg1, arg2>
+l"."p"2"
+lang: %s
+language list
+language selection
+last tone
+last voice prompt
+lc <lang>
+ld <mask>,<state>
+led: %d
+ledButtonTestMode: %u
+ledButtonTestResults: %u
+led_supply: %u
+limits: %u,%u
+link state
+link: %s
+list: 
+lpm.bin
+lqBDBE
+lt <tone>
+lv <prompt>
+m \IsCW]
+m`xjalRo
+maint: %u
+manufacturing circuit testing
+manufacturing mode
+master trim: %i
+matches
+maxcurrent: %d
+mfgmode: %u
+miclevel: %02x
+mm <mode>
+mode: %u
+monitor: %d %s
+mt [0|1],<value>
+mu [0|1]
+mute: %u
+n"0"o"1"r"v"
+n"o"r"v"
+nUGin6
+nX)SlS|%s
+n^lkbt
+name: %s
+netCharging: %02x
+next prompt will repeat forever
+not found
+o3[fK;{2
+oc [0|1]
+pAPB0C
+pAlexaTestGPB->bBuiltIn         : %d
+pAlexaTestGPB->bDecode          : %d
+pAlexaTestGPB->bEncode          : %d
+pAlexaTestGPB->bExtendedBtafHdr : %d
+pAlexaTestGPB->lenBTAFHdr       : %d
+pAlexaTestGPB->lenCtrlEnv       : %d
+pAlexaTestGPB->lenEncodedBuf    : %d
+pAlexaTestGPB->lenInitStr       : %d
+pAlexaTestGPB->pCtrlEnv         : %p
+pAlexaTestGPB->pEncodedBuf      : %p
+pAlexaTestGPB->pInitStr         : %p
+pBbBBC"[
+pa 0|1
+pi [#]
+pio[%u] config as 
+pk <type>,<key>,[<da>]
+play AUX audio
+pong end
+port: %s%d
+power state
+power: %u
+powerManagementTestStatus: %u
+powring off 
+powring on as central
+primary
+primary device not available
+profile %d %sset
+profile: %u
+prompt: 
+prompts will not repeat
+prompts/%u.prm
+ps <state>
+ps_clear
+ps_read
+ps_write
+psn: %x sess: %x ack: %x
+qHGp%
+ql}E5?
+quality: %d
+query adc
+query/control boot mode
+query/control operate while charging
+query/control sample rate
+query/control source
+query/control user mute
+query/control volume
+query/set mic trim
+rAR5f
+rEq]q@4
+radio test mode
+rate: %s
+read serial number
+read/write CVC license key
+read/write/validate TTS License key
+ready: %u
+reman running: %u
+remove
+resume
+return: %u
+rmY*C,
+rssi(primary): %d dBm
+rssi(secondary): %d dBm
+rssi: %d
+rt <mode>
+runtime statistics
+sd:%u,%u,%d,%d,%d,%d,%d,%d,%u
+sd:%u,%u,%d,%d,%d,%d,%u
+sd:%u,%u,%d,%d,%d,%u
+secondary
+secondary device not available
+send over ipc
+sensor_id parameter must be between 0 and %d.
+serial: %06lu
+serial: %s
+set: %d
+severity: %d
+sf_rfd1u~
+shared volume: %lu
+ship mode
+ship running: %u
+shipmode: %d
+shipmode: %u
+shutdown
+si:%u,%d,%d,%d,%d,0x%04x,%u
+signal processing
+signal: %u
+simulate key presses
+sink state
+sink state: %u
+sink: %x
+size %u > max len %u for pk cmd
+slave trim: %i
+slot 7
+sn <id>
+so <src>
+soft reset
+source: %u
+sp <command>,<data>
+speaker trimming
+st <value>,<value>
+state: %08lx
+state: %s%d
+state[%d]: %d
+status
+status: %u
+supported
+suspended: %u
+sv <field>,<id>
+syntax error. syntax:
+system variant
+t,pLt&
+tUx:r#
+tap SPP: %u
+tap enabled control
+tapCachePrint overwrote buffer
+te <enable>
+temp: %i
+temperature monitor
+temperature: %d
+temperature: %u
+test case: %u
+test status
+tk <cmd>,<value>
+tm <source>
+tone: %u
+tone: 0x%x
+tones: %d
+ts <test>,<value>
+tt <category>,<command>
+ttsvol: %u
+u*MI6:(
+ua5F(^
+uc <params>
+ud <id>
+ue debug: %u
+unimplemented
+unknown sensor type: %d
+unpair
+updatable: %d
+usage(dec&snd)> gt 4,<number for built-in test msg>
+usage(decode) > gt 1,<hexstr for encoded octets (no BTAF Hdr)>
+usage(decode) > gt 5,<hexstr for encoded octets (no BTAF Hdr)>
+usage(enc+dec)> gt 3,<hexstr for ctrlEnv>
+usage(enc+dec)> gt 7,<hexstr for ctrlEnv>
+usage(encode) > gt 2,<hexstr for ctrlEnv>
+usage(encode) > gt 6,<hexstr for ctrlEnv>
+usage> gt arg1,arg2
+usb fault flag: %u
+usb source: %u
+usb state: 
+usb status
+usb vid/pid
+usbAudioRoute(%p)
+usbAudioSinkMatch(%p)=>%d
+usbAudioSuspended() = %d
+usbcable: %d
+usbcable: %u
+v%],x%
+valid: %d
+value: 0x%lX
+variant: %u
+version: AUTHIC %d
+version: Ext %s
+version: Main %s.%s.%s-%s %s.%s.%s
+version: Micro %u.%u
+version: Micro %u.%u.%u
+vl <min>,<max>
+vo [#]
+voltage battery
+voltage: %u
+volume down
+volume limits
+volume up
+volume: %lu
+volume: %u
+vp <args>
+vpa debug
+vpa.state->%u->%u
+vpaGetCurrentState: %u
+vpaGetCurrentVpa: %u
+vpaHandleA2dpStop: state %d
+vpaHandleCallingCommand: cmd %d
+vpaHandleVoiceCommandComplete: state %d
+vpaHandleVoiceCommandStop: reason %d state %d
+vpaInit
+vpaIsConnected: %u
+vpaPauseMusic
+vpaResumeMusic
+vr <mask>
+vreg: %d
+w#H#c#
+w7Lvx(
+w@X8hV
+wUtfkjt
+xjalRq^w
+xrv8m
+x&w"y8
+x6wB:&9"
+x6wBx&w"
+x?ff&?
+xEq"x9p
+xVwb:69B:&9"
+y24"NVC
+z?333?
+zbYa/9C
+{{;y%xEx
+|Yaii,p
+|d05~d
+|dP5~d
+~H8}nJ|j}{=
