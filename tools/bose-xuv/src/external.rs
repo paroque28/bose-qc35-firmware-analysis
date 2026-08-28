@@ -98,16 +98,23 @@ pub fn erase_sqif(dev: &HidDevice, partition: u8) -> Result<()> {
 /// Streams a 140-byte priming chunk, then 1019-byte chunks, each as one `03 03 <len_be> <data>`
 /// output report. Every chunk's response is checked for the success status.
 pub fn write_sqif(dev: &HidDevice, payload: &[u8]) -> Result<()> {
+    let total = payload.len();
     let mut offset = 0usize;
-    let first = PRIME_LEN.min(payload.len());
+    let first = PRIME_LEN.min(total);
     send_chunk(dev, &payload[..first])?;
     offset = offset.max(first);
 
-    while offset < payload.len() {
-        let end = (offset + CHUNK_LEN).min(payload.len());
+    let mut next_report = 256 * 1024;
+    while offset < total {
+        let end = (offset + CHUNK_LEN).min(total);
         send_chunk(dev, &payload[offset..end])?;
         offset = end;
+        if offset >= next_report {
+            debug!("external: wrote {offset}/{total} bytes ({}%)", offset * 100 / total);
+            next_report += 256 * 1024;
+        }
     }
+    debug!("external: wrote {total}/{total} bytes (100%)");
     Ok(())
 }
 
