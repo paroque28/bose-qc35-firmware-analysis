@@ -114,19 +114,73 @@ The binary carries two parallel device abstractions:
 Keeping these straight matters for a reimplementation: only the first family applies here, and
 it is the simpler of the two.
 
+## The recovered protocol (from disassembly)
+
+The updater binary is unstripped, with full C++ symbols and the `ExternalFlasher` class
+methods individually named. Disassembling them (LLVM `objdump`, x86_64) recovered the exact
+wire protocol, so the "missing numeric opcodes" gap noted below is now closed for the
+external-flash path. The device was not touched to obtain any of this.
+
+**Transport.** Every command is a USB HID report whose first byte is the report ID `0x03`.
+The frame is:
+
+```
+[0x03] [opcode] [args...]
+```
+
+The host writes this as an output report (`ExternalFlasher::ExecuteCommand(opcode, payload)`
+builds exactly `buf[0]=0x03`, `buf[1]=opcode`, then appends the payload), then reads a
+response report back. In the response, the **status byte is at offset 2**: `0x01` means
+success/continue. The read uses a 50000 ms (50 s) timeout, which is the same manifest wait we
+saw during the 4.3.6 flash.
+
+**Command set** (`ExternalFlasher`, opcode = the `signed char` first argument):
+
+| Opcode | Name | Payload | Meaning |
+|---|---|---|---|
+| `0x01` | bootmode control | 1 byte | `0x01` = enter external bootmode (`EnterBootmode`), `0x00` = reset / exit bootmode (`ResetDevice`) |
+| `0x02` | erase SQIF partition | 1 byte | partition number to erase (`EraseSqif(int)`, payload is exactly that int) |
+| `0x03` | write data chunk | `[len_hi][len_lo]` + data | 16-bit big-endian byte count (up to 1019) followed by that many payload bytes (`WriteSqif`) |
+
+**Write loop** (`WriteSqif`). The report buffer starts `0x03 0x03` (report ID, write opcode),
+bytes 2 and 3 are the chunk length big-endian, and the data follows from byte 4. It reads the
+`.xuv` in an initial 140-byte (`0x8c`) priming read (the DFU signature header), then loops
+reading 1019-byte (`0x3fb`) chunks and sending each as one `0x03` report (total report size
+1023 = `0x3ff`), until a short read ends the file. `ReadXuv(QFile&, buf, len)` parses the
+`@ADDR HHHH` word lines into raw bytes, carrying the odd byte between reads. This is the same
+payload `tools/xuv.py` already extracts.
+
+**File validation.** Before writing, `GetFileSignature` / `RunVerification` confirm the `.xuv`
+is a DFU-signed image (the `fsr_dfu1` magic and signature block). An unsigned or malformed
+file is rejected (`Input file is not DFU signed`, `File format is invalid, no payload found`).
+
+**Full external-flash sequence for the QC35 II** (CSR `Device` path):
+
+1. Enter external bootmode: `03 01 01`, wait for the device to re-enumerate under its bootmode
+   PID (learned via `getBootmodePid`).
+2. For each external image, in `SUBID` order, using the partition number from the `TARGET`
+   attribute (`ext_signed.xuv` = 1, `acorn_coeffs_signed.xuv` = 3):
+   a. Erase: `03 02 <target>`.
+   b. Write: stream `03 03 <len_be> <data>` chunks of up to 1019 bytes until the file ends.
+   c. Read the final response and confirm status `0x01`.
+3. Reset out of bootmode: `03 01 00`, then the normal-mode / DSP resets.
+
+That is a complete, implementable specification. The two residual unknowns are both small and
+both settle with one dry run or USB capture: whether the QC35 II presents a distinct external
+bootmode PID or reuses `0x4020`, and confirmation that report ID `0x03` matches the device's
+HID report descriptor (the updater assumes it does).
+
 ## Could issue 6 be fixed? Yes. What it would take
 
 Nothing found here blocks a clean-room reimplementation. Concretely:
 
-1. **Recover the numeric HID report IDs and command opcodes.** These are the one missing
-   piece. They are integer literals in the compiled functions (`DFU_HID_REPORTID_STATUS`,
-   the ExternalFlasher erase/partition/write commands, `getBootmodePid`), not in the string
-   table, so recovering them needs a real disassembler (Ghidra or radare2, neither installed
-   on this machine) pointed at the functions named by the surviving
-   `CommonSource/HidDfu/HidDfu*.cpp` paths. Alternatively, a single USB capture of the
-   official updater writing 4.8.1 (the only release whose `.xuv` content actually differs)
-   would hand over the exact report bytes directly, which is what upstream issue 6 originally
-   asked for. Disassembly and capture are two routes to the same small set of numbers.
+1. **Recover the numeric HID report IDs and command opcodes.** Done, see "The recovered
+   protocol" above. The updater turned out to be unstripped, so disassembling the named
+   `ExternalFlasher` methods gave the exact report ID (`0x03`) and the three opcodes
+   (`0x01` bootmode, `0x02` erase, `0x03` write) directly. A USB capture of the official
+   updater writing 4.8.1 would still be worth doing once, to confirm the report ID against
+   the device's HID descriptor and to settle whether the external bootmode uses a distinct
+   PID, but it is a confirmation step now, not the way in.
 2. **Parse the `.xuv` into its binary payload.** Already essentially done in this repo
    (`tools/xuv.py`). The payload is the words after the `fsr_dfu1` header and signature block.
 3. **Implement the external path in a `bose-dfu` fork.** Reuse its existing HID DFU state
@@ -140,8 +194,10 @@ Nothing found here blocks a clean-room reimplementation. Concretely:
    nothing meaningful changed. Only after that is proven should the coefficient partition
    (TARGET 3) be written, which is the one with real consequences.
 
-Estimated effort: recovering the opcodes is the bulk of it (a focused disassembly session, or
-one clean USB capture). The rest is a few hundred lines on top of `bose-dfu`.
+Estimated effort: with the opcodes now recovered, what remains is a few hundred lines on top
+of `bose-dfu` (the `.xuv` parser it does not have yet, the three external-flash commands, and
+the bootmode enter/exit resets with re-enumeration polling), plus one careful dry run against
+a real device to confirm the report ID and bootmode PID before writing anything that matters.
 
 ## Why this matters for the ANC investigation
 
