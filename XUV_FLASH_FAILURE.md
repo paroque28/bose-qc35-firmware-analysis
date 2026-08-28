@@ -5,8 +5,10 @@ Host: macOS (Darwin 24.6.0), Intel Mac, built-in USB.
 Device: Bose QuietComfort 35 II, hardware serial `077061Z83182423AZ`, running `Main 4.5.2.144`.
 Tool: `tools/bose-xuv` at commit `79fed7c`.
 Outcome: the erase command was rejected by the device, no partition was written, and the
-headset was left stuck in external bootmode (`05a7:40fd`) until a manual power cycle. The
-device was never in danger of bricking and nothing was erased.
+headset was left in external bootmode (`05a7:40fd`) by a persistent flag that a power cycle
+does not clear (see the recovery section). The device stayed fully responsive throughout and
+nothing was erased, so it was never in danger of bricking. The reliable recovery is the
+official Bose Updater.
 
 This is the companion to `XUV_FLASHING.md` (the protocol) and `FLASHING.md` (the successful
 `.dfu` flashes). It records the first attempt to actually write an external-flash partition,
@@ -78,8 +80,37 @@ Every signal says the headset is healthy, just parked in the wrong mode:
 - The erase was rejected, so no partition was modified. The internal application firmware and
   the coefficient partition were never addressed by any command.
 
-Recovery is a power cycle: unplug USB, slide the power switch fully off, wait about ten
-seconds, slide it on, replug. The device then boots the normal 4.5.2 firmware.
+### The bootmode flag is persistent (update after recovery attempts)
+
+The first draft of this report assumed a power cycle would recover the device. It does not.
+The external-bootmode state set by the erase attempt is persistent, and survives every reset
+available without Bose's own tooling. Tested in order, all leaving the device at `05a7:40fd`:
+
+- Software exit-bootmode (`03 01 00`): acknowledged with status `0x01`, device stays at `40fd`.
+- A full hardware power cycle (USB unplugged, power switch off ten seconds, on, replug): the
+  device booted straight back into `40fd`.
+- An internal-DFU round trip: `bose-dfu enter-dfu -f` did move it to `05a7:4020` (internal DFU),
+  which proves the device still accepts the normal feature-report commands, but the following
+  `bose-dfu leave-dfu -f` returned it to `40fd` again, not to normal.
+
+So a persistent flag, written by the erase attempt, tells the bootloader to enter external
+bootmode on every boot. Neither the `03 01 00` reset, nor a power cycle, nor the internal-DFU
+path clears it. Throughout all of this the device stayed fully responsive and kept reading
+`Main 4.5.2.144`, so the internal firmware is intact. What is stuck is only the boot-mode
+selector.
+
+### Recovery: the official Bose Updater
+
+Because the flag is cleared only by a proper "external flash complete, final reset" sequence,
+the reliable recovery is Bose's own updater, which owns that sequence and recognises `40fd` as
+its external-flash mode:
+
+1. Open the Bose Updater (the `Bose Updater.app` already archived here, or the web updater at
+   `btu.bose.com` with the browser helper).
+2. Let it connect to the headset over USB. It will detect the device in external bootmode.
+3. Let it run a full update or repair. It completes the external flash and resets the device to
+   normal mode, clearing the boot-mode flag.
+4. Confirm with `bose-dfu info -f` that the device is back at `05a7:40fe` on `Main 4.5.2.144`.
 
 ## Why the erase was most likely rejected
 
@@ -120,8 +151,11 @@ Newly learned from the failure:
 
 - The erase opcode alone, with a bare partition-number argument, is **not** accepted. The erase
   sub-protocol needs more than the three-opcode model captured so far.
-- Sending the erase opcode moves the device into a bootmode state that a software exit does not
-  clear. A power cycle is required after any erase attempt, successful or not.
+- Sending the erase opcode moves the device into a persistent external-bootmode state. It is
+  cleared neither by the software exit (`03 01 00`), nor by a power cycle, nor by an
+  internal-DFU round trip. Only the official Bose Updater's proper completion sequence recovers
+  it. This means the erase attempt writes a boot-mode flag to non-volatile storage before it
+  refuses the erase itself.
 - External bootmode still answers the info feature reports, so the running firmware version is
   readable even in that mode.
 
