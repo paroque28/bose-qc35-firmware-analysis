@@ -24,6 +24,13 @@ const BOSE_VID: u16 = 0x05a7;
 /// On Linux/libusb the interfaces collapse into one device reported as usage page 0.
 const BOSE_USAGE_PAGE: u16 = 0xff00;
 
+/// QC35 II USB product IDs. Confirmed on hardware:
+///   0x40fe  normal mode
+///   0x4020  internal DFU bootmode (bose-dfu enter-dfu, writes the .dfu)
+///   0x40fd  external bootmode (writes the .xuv, reached with enter-bootmode from normal mode)
+const PID_NORMAL: u16 = 0x40fe;
+const PID_EXTERNAL_BOOTMODE: u16 = 0x40fd;
+
 #[derive(Parser, Debug)]
 #[clap(version, about)]
 enum Cmd {
@@ -40,7 +47,15 @@ enum Cmd {
         pid: Option<u16>,
     },
 
-    /// Erase a SQIF partition and write a .xuv into it. Destructive.
+    /// Send exit-bootmode (03 01 00) to return a device to normal mode. No erase.
+    Reset {
+        /// Match this product ID (hex, unprefixed), e.g. 40fd for external bootmode.
+        #[clap(short, long, parse(try_from_str = parse_hex16))]
+        pid: u16,
+    },
+
+    /// Erase a SQIF partition and write a .xuv into it. Destructive. Drives the full sequence:
+    /// enter external bootmode from normal mode, erase, write, then reset back to normal.
     Flash {
         #[clap(parse(from_os_str))]
         file: PathBuf,
@@ -48,10 +63,6 @@ enum Cmd {
         /// SQIF partition number (index.xml TARGET: 1 = voice prompts, 3 = ANC coefficients).
         #[clap(short = 't', long)]
         partition: u8,
-
-        /// Match this product ID (hex, unprefixed). Required, so the mode is chosen deliberately.
-        #[clap(short, long, parse(try_from_str = parse_hex16))]
-        pid: u16,
 
         /// Actually perform the erase and write. Without this, the command only prints a plan.
         #[clap(long)]
@@ -75,12 +86,12 @@ fn main() -> Result<()> {
     match Cmd::parse() {
         Cmd::Parse { file } => parse_cmd(&file),
         Cmd::Probe { pid } => probe_cmd(pid),
+        Cmd::Reset { pid } => reset_cmd(pid),
         Cmd::Flash {
             file,
             partition,
-            pid,
             yes,
-        } => flash_cmd(&file, partition, pid, yes),
+        } => flash_cmd(&file, partition, yes),
     }
 }
 
@@ -110,6 +121,21 @@ fn find_device<'a>(api: &'a HidApi, pid: Option<u16>) -> Result<&'a DeviceInfo> 
         bail!("multiple Bose devices match; pass --pid to disambiguate");
     }
     Ok(first)
+}
+
+/// Poll the USB bus until a device with `want` product ID appears, or time out.
+fn wait_for_pid(api: &mut HidApi, want: u16, timeout: Duration) -> Result<()> {
+    let deadline = Instant::now() + timeout;
+    loop {
+        api.refresh_devices()?;
+        if bose_pids(api).contains(&want) {
+            return Ok(());
+        }
+        if Instant::now() > deadline {
+            bail!("device did not present PID {want:04x} within {timeout:?}");
+        }
+        sleep(Duration::from_millis(300));
+    }
 }
 
 fn parse_cmd(file: &std::path::Path) -> Result<()> {
@@ -145,72 +171,113 @@ fn probe_cmd(pid: Option<u16>) -> Result<()> {
     }
     drop(dev);
 
-    // Watch for re-enumeration for up to 12 seconds.
+    // Watch for re-enumeration, skipping the transient empty state while the device resets.
     let deadline = Instant::now() + Duration::from_secs(12);
     let mut observed = before.clone();
     while Instant::now() < deadline {
-        sleep(Duration::from_millis(500));
+        sleep(Duration::from_millis(300));
         api.refresh_devices()?;
         let now = bose_pids(&api);
-        if now != before {
+        if !now.is_empty() && now != before {
             observed = now;
             break;
         }
-        observed = now;
     }
     println!("Bose PIDs after enter-bootmode: {observed:04x?}");
 
     let new_pids: Vec<u16> = observed.iter().copied().filter(|p| !before.contains(p)).collect();
-    if new_pids.is_empty() && observed == before {
+    if new_pids.is_empty() {
         println!(
-            "No PID change. The device ignored the command in this mode, or the external \
-             bootmode reuses the same PID. Either way, nothing was erased."
+            "No PID change. The device ignored the command in this mode, or external bootmode \
+             reuses the same PID. Either way, nothing was erased."
         );
     } else {
         println!("External bootmode PID(s): {new_pids:04x?}");
     }
 
-    // Best-effort return to normal: send exit to whatever we can now open.
-    api.refresh_devices()?;
-    if let Ok(info) = find_device(&api, None) {
-        if let Ok(dev) = info.open_device(&api) {
-            println!("Sending exit-bootmode (03 01 00) to 05a7:{:04x}", info.product_id());
-            let _ = external::exit_bootmode(&dev);
+    // Return to normal: send exit-bootmode to the new PID, then confirm.
+    if let Some(&bm) = new_pids.first() {
+        if let Ok(info) = find_device(&api, Some(bm)) {
+            if let Ok(dev) = info.open_device(&api) {
+                println!("Sending exit-bootmode (03 01 00) to 05a7:{bm:04x}");
+                let _ = external::exit_bootmode(&dev);
+            }
         }
     }
-
-    // Report where the device ended up.
-    sleep(Duration::from_secs(2));
-    api.refresh_devices()?;
-    println!("Bose PIDs after exit: {:04x?}", bose_pids(&api));
+    match wait_for_pid(&mut api, PID_NORMAL, Duration::from_secs(12)) {
+        Ok(()) => println!("Device returned to normal mode (05a7:{PID_NORMAL:04x})"),
+        Err(e) => warn!("device did not return to normal mode: {e:#}"),
+    }
     Ok(())
 }
 
-fn flash_cmd(file: &std::path::Path, partition: u8, pid: u16, yes: bool) -> Result<()> {
+/// Send exit-bootmode to a device and report where it lands. No erase.
+fn reset_cmd(pid: u16) -> Result<()> {
+    let mut api = HidApi::new()?;
+    println!("Bose PIDs before: {:04x?}", bose_pids(&api));
+    let info = find_device(&api, Some(pid))?;
+    let dev = info.open_device(&api).context("opening device")?;
+    println!("Sending exit-bootmode (03 01 00) to 05a7:{pid:04x}");
+    match external::exit_bootmode(&dev) {
+        Ok(resp) if resp.is_empty() => info!("no response (device likely reset immediately)"),
+        Ok(resp) => info!("response: {:02x?}", &resp[..resp.len().min(16)]),
+        Err(e) => warn!("exit-bootmode returned an error (may be normal on reset): {e:#}"),
+    }
+    drop(dev);
+    sleep(Duration::from_secs(3));
+    api.refresh_devices()?;
+    println!("Bose PIDs after: {:04x?}", bose_pids(&api));
+    Ok(())
+}
+
+fn flash_cmd(file: &std::path::Path, partition: u8, yes: bool) -> Result<()> {
     let f = std::fs::File::open(file).with_context(|| format!("opening {}", file.display()))?;
     let xuv = xuv::parse(BufReader::new(f))?;
 
     println!("Plan:");
-    println!("  file          {}", file.display());
-    println!("  payload       {} bytes", xuv.payload.len());
-    println!("  device        05a7:{pid:04x}");
+    println!("  file           {}", file.display());
+    println!("  payload        {} bytes", xuv.payload.len());
     println!("  SQIF partition {partition}  (ERASE, then WRITE)");
+    println!("  sequence       normal (05a7:{PID_NORMAL:04x}) -> external bootmode \
+              (05a7:{PID_EXTERNAL_BOOTMODE:04x}) -> erase -> write -> reset to normal");
 
     if !yes {
         println!("\nDry run only. Re-run with --yes to erase and write. This is destructive.");
         return Ok(());
     }
 
-    let api = HidApi::new()?;
-    let info = find_device(&api, Some(pid))?;
-    let dev = info.open_device(&api).context("opening device")?;
+    let mut api = HidApi::new()?;
 
-    warn!("Erasing SQIF partition {partition}; contents are lost now");
+    // 1. Enter external bootmode from normal mode.
+    {
+        let info = find_device(&api, Some(PID_NORMAL))
+            .context("device must be in normal mode (05a7:40fe) to start")?;
+        let dev = info.open_device(&api).context("opening normal-mode device")?;
+        info!("Entering external bootmode");
+        let _ = external::enter_bootmode(&dev);
+    }
+
+    // 2. Wait for the external-bootmode PID to appear, then open it.
+    wait_for_pid(&mut api, PID_EXTERNAL_BOOTMODE, Duration::from_secs(15))
+        .context("device did not enter external bootmode")?;
+    let dev = {
+        let info = find_device(&api, Some(PID_EXTERNAL_BOOTMODE))?;
+        info.open_device(&api).context("opening external-bootmode device")?
+    };
+
+    // 3. Erase, then write.
+    warn!("Erasing SQIF partition {partition}; its previous contents are gone after this");
     external::erase_sqif(&dev, partition)?;
     info!("Erase acknowledged; writing {} bytes", xuv.payload.len());
     external::write_sqif(&dev, &xuv.payload)?;
-    info!("Write complete; resetting device");
+    info!("Write complete");
+
+    // 4. Reset back to normal.
     let _ = external::exit_bootmode(&dev);
-    println!("Done.");
+    drop(dev);
+    match wait_for_pid(&mut api, PID_NORMAL, Duration::from_secs(15)) {
+        Ok(()) => println!("Done. Device is back in normal mode (05a7:{PID_NORMAL:04x})."),
+        Err(e) => warn!("write finished but device did not return to normal mode: {e:#}"),
+    }
     Ok(())
 }

@@ -52,11 +52,11 @@ We already knew two from flashing 4.3.6:
   is written here. (Note `index.xml` labels the whole device `ID="0x4020"`, keyed on this
   bootmode PID.)
 
-The updater reveals a third:
+The updater reveals a third, now **confirmed on hardware**:
 
-- **External bootmode**: a distinct PID the host learns at runtime with a `getBootmodePid`
-  command, entered with a `reset-enter-external-bootmode` command. The `.xuv` images are
-  written here.
+- **External bootmode**: `05a7:40fd`. Entered by sending the enter-bootmode command directly
+  from normal mode. The `.xuv` images are written here. This PID is distinct from both normal
+  mode (`0x40fe`) and internal DFU (`0x4020`).
 
 The updater has a generic reset primitive with these named transitions (all present as
 strings): `Enter Internal Bootmode` / `Exit Internal Bootmode` /
@@ -66,10 +66,15 @@ expected new PID (`The Device did not reset into the new bootmode (0x%1) in time
 `Device with original PID (0x%1) detected... retrying reset commands`). This is exactly the
 disappear/re-enumerate dance we watched during the 4.3.6 flash, generalised to more modes.
 
-Open point worth a USB capture: on the CSR-based QC35 II the internal and external bootmode
-may share the single PID `0x4020` rather than using two different PIDs. The state machine
-supports separate PIDs (it was written to cover newer devices too), but that does not prove
-the QC35 II uses two. This is the one thing static analysis cannot settle with certainty.
+**Resolved (was an open point).** Static analysis could not tell whether the QC35 II gives
+external bootmode its own PID or reuses `0x4020`. A non-destructive probe on the actual unit
+settled it: sending `03 01 01` (enter external bootmode) in normal mode is acknowledged with
+status `0x01`, and the device re-enumerates as `05a7:40fd`, a third, distinct PID. Sending
+`03 01 00` (exit) returns it to `05a7:40fe`. Two enter/exit cycles left the headset healthy
+on `4.5.2.144` with its serial intact, and no partition was erased, because the erase is a
+separate opcode. A further finding: external bootmode is reachable **directly from normal
+mode**, so the internal-then-external ordering the update sequence implies is not required for
+the external path alone.
 
 ## The full update sequence, in order
 
@@ -165,10 +170,11 @@ file is rejected (`Input file is not DFU signed`, `File format is invalid, no pa
    c. Read the final response and confirm status `0x01`.
 3. Reset out of bootmode: `03 01 00`, then the normal-mode / DSP resets.
 
-That is a complete, implementable specification. The two residual unknowns are both small and
-both settle with one dry run or USB capture: whether the QC35 II presents a distinct external
-bootmode PID or reuses `0x4020`, and confirmation that report ID `0x03` matches the device's
-HID report descriptor (the updater assumes it does).
+That is a complete, implementable specification. Both residual unknowns are now closed on
+hardware (see the probe result above): the external bootmode PID is `0x40fd`, and report ID
+`0x03` output with a response carrying status `0x01` at offset 2 is confirmed, because the
+enter-bootmode command was acknowledged exactly that way. The response arrives as input report
+`0x04` (`[04, 01, 01]`).
 
 ## Could issue 6 be fixed? Yes. What it would take
 
@@ -254,6 +260,33 @@ listening comparison first on the firmware already flashed, then build the exter
 the next project. The Rust `.xuv` reader and the `external.rs` skeleton can both be written
 with no device touched, so that when the time comes the only step left is the single dry run to
 pin down the bootmode PID.
+
+## Status: the tool exists (`tools/bose-xuv`)
+
+The external flasher described above is now written, as a small standalone Rust crate in
+`tools/bose-xuv`. It does not fork bose-dfu, because the external path is a different transport
+(HID output and input reports, not feature reports), so it shares no code with it. Three of its
+four parts are verified:
+
+- **`xuv.rs`**: parses a `.xuv` into its little-endian payload and checks the `fsr_dfu1` magic.
+  Verified offline against both real 4.5.2 images (coefficients 4118 bytes, external 2.83 MB),
+  with unit tests for the magic, address gaps, and malformed input.
+- **`external.rs`**: the three commands (bootmode, erase, write) and the
+  prime-then-1019-byte-chunk write loop, exactly as recovered.
+- **`main.rs`**: `parse` (offline), `probe` (non-destructive bootmode reconnaissance), `reset`
+  (exit bootmode), and `flash` (the full enter, erase, write, reset sequence, guarded by
+  `--yes`).
+
+What is confirmed on the actual QC35 II: the parser, the transport (report `0x03` out,
+`0x04` in, status `0x01` at offset 2), the external bootmode PID (`0x40fd`), and that
+enter/exit bootmode is fully reversible with the device left healthy on `4.5.2.144`.
+
+What is deliberately not yet exercised: the live `erase` and `write`. The safe first target is
+`ext_signed.xuv` into partition 1 (voice prompts), because that payload is byte-identical to
+what the device already holds, so a correct write changes nothing and a wrong one can only
+corrupt voice prompts, which the official updater restores. It cannot brick the headset: the
+internal firmware and the ANC coefficient partition are untouched. Only after that write is
+proven should partition 3 (the coefficients) be written.
 
 ## Why this matters for the ANC investigation
 
